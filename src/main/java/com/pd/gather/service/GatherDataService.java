@@ -92,7 +92,6 @@ public class GatherDataService {
             GatherDataEntity gatherDataEntity = tableInGather.get(0).getGatherDataEntity();
             if (gatherDataEntity.getCreateHiveTable() == Boolean.valueOf(Constants.TRUE)) {
                 boolean createHiveTableSucc = gatherDataInterface.createHiveTable(createHiveTableSqls);
-                logger.info("create hive table success!");
             }
 
             List<String> dataxJsonList = gatherDataInterface.getDataxJson(createHiveTableSqls, tableInGather, jsonFileTempleStatic);
@@ -109,7 +108,7 @@ public class GatherDataService {
             }
 
         } catch (Exception e) {
-            logger.error("on line job by %s failed! %s", id, e.getMessage());
+            logger.error("on line job by {} failed! {}", id, e.getMessage());
             e.printStackTrace();
         }
         return n;

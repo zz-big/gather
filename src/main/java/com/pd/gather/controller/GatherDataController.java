@@ -2,6 +2,8 @@ package com.pd.gather.controller;
 
 import com.pd.gather.entity.GatherDataEntity;
 import com.pd.gather.service.GatherDataService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import java.util.List;
 
 @Controller
 public class GatherDataController {
+    private Logger logger = LoggerFactory.getLogger(GatherDataController.class);
 
     @Autowired
     private GatherDataService gatherDataService;
@@ -27,6 +30,7 @@ public class GatherDataController {
 
     @RequestMapping("insertGather")
     public ModelAndView insertGather(GatherDataEntity gatherDataEntity) {
+        logger.info("insert gather");
         int n = 0;
         ModelAndView mv = new ModelAndView();
         try {
@@ -44,6 +48,7 @@ public class GatherDataController {
 
     @RequestMapping("findGatherByPage")
     public ModelAndView findGatherByPage(Integer pageIndex) {
+        logger.info("find gather by page");
         int pageSize = 10;
         int totalCount = gatherDataService.findGatherCount();
         int totalPage = (totalCount % pageSize == 0) ? (totalCount / pageSize) : (totalCount / pageSize + 1);
@@ -66,6 +71,7 @@ public class GatherDataController {
 
     @RequestMapping("updateGatherShow")
     public ModelAndView updateGathershow(Integer id) {
+        logger.info("redirect to update ui  by id");
 
         ModelAndView mv = new ModelAndView();
         try {
@@ -81,6 +87,7 @@ public class GatherDataController {
 
     @RequestMapping("updateGather")
     public ModelAndView updateGather(GatherDataEntity gatherDataEntity) {
+        logger.info("update gather by id");
         int n = 0;
         ModelAndView mv = new ModelAndView();
         try {
@@ -98,6 +105,7 @@ public class GatherDataController {
 
     @RequestMapping("deleteGather")
     public ModelAndView deleteGather(Integer id) {
+        logger.info("delete gather by id");
         int n = 0;
         ModelAndView mv = new ModelAndView();
         try {
@@ -117,6 +125,7 @@ public class GatherDataController {
     @RequestMapping("deleteGatherBatch")
     public @ResponseBody
     int deleteGatherBatch(@RequestParam(value = "list[]") String[] gatherJobIdList) {
+        logger.info(" batch delete gather datas: {}", gatherJobIdList.toString());
         int n = 0;
         for (String GatherJobId : gatherJobIdList) {
             n = gatherDataService.deleteGatherData(Integer.valueOf(GatherJobId));
@@ -128,12 +137,14 @@ public class GatherDataController {
     @RequestMapping("onLineGather")
     public @ResponseBody
     int onLineGather(@RequestParam(value = "int") Integer id) {
+        logger.info("online job by id: {}", id);
         return gatherDataService.onLineGather(id);
     }
 
     @RequestMapping("onLineBatch")
     public @ResponseBody
     int onLineBatch(@RequestParam(value = "list[]") String[] onLineList) {
+        logger.info(" batch online jobs: {}", onLineList.toString());
         int n = 0;
         for (String onLineId : onLineList) {
             n = gatherDataService.onLineGather(Integer.valueOf(onLineId));
@@ -143,6 +154,7 @@ public class GatherDataController {
 
     @RequestMapping("dolphinUrl")
     public ModelAndView dolphinUrl() {
+        logger.info("redirect to dolphin url");
         String dolphinUrl = gatherDataService.getDolphinUrl();
         ModelAndView mv = new ModelAndView();
         mv.setViewName("redirect:" + dolphinUrl);

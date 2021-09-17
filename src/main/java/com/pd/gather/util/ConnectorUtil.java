@@ -58,10 +58,10 @@ public class ConnectorUtil {
     public int execUpdateOrInsert(String sql) {
         int i = 0;
         try {
-            logger.debug("exec sql {}", sql);
+            logger.debug("exec update or insert sql {}", sql);
             i = state.executeUpdate(sql);
         } catch (SQLException throwables) {
-            logger.error("exec sql failed! {}", sql);
+            logger.error("exec update or insert sql failed! {}", sql);
             throwables.printStackTrace();
         }
         return i;
@@ -71,7 +71,7 @@ public class ConnectorUtil {
         ResultSet resultSet = null;
         ResultSetMetaData resultMetaData = null;
         ArrayList<HashMap<String, String>> reseult = new ArrayList<HashMap<String, String>>();
-        logger.debug("exec sql {}", sql);
+        logger.info("exec query sql : {}", sql);
         try {
             resultSet = state.executeQuery(sql);
             resultMetaData = resultSet.getMetaData();
@@ -87,7 +87,7 @@ public class ConnectorUtil {
             }
 
         } catch (SQLException throwables) {
-            logger.error("exec sql failed! {}", sql);
+            logger.error("exec query sql failed! {}", sql);
             throwables.printStackTrace();
         }
 
@@ -102,7 +102,7 @@ public class ConnectorUtil {
         String columnName;
         String columnType;
         String comment;
-        logger.debug("get meta data {}, {}", db, tableName);
+        logger.info("get meta data {}, {}", db, tableName);
         try {
             metaData = con.getMetaData();
             ResultSet colRet = state.executeQuery(String.format(Constants.SHOW_COLUMNS, db, tableName));
