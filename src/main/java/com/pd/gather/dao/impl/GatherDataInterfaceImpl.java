@@ -52,7 +52,7 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
         ConnectorUtil conn = null;
         List<HashMap<String, String>> result = null;
         try {
-
+            logger.info("get gather data");
             String tableName = properties.getProperty(Constants.MYSQL_TABLE_NAME);
             conn = getConn();
             result = conn.execQuery(String.format(Constants.SELECT_ALL_FROM_TABLE, properties.getProperty(Constants.MYSQL_DB), properties.getProperty(Constants.MYSQL_TABLE_NAME), tableName));
@@ -71,8 +71,11 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
     @Override
     public List<HashMap<String, String>> getGatherDataById(Integer id) {
 
+        logger.info("get gather data by id: {}", id);
         ConnectorUtil conn = null;
         List<HashMap<String, String>> result = null;
+
+
         try {
 
             conn = getConn();
@@ -91,6 +94,8 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
     @Override
     public List<TableMetaDataEntity> getTablesInGather(List<HashMap<String, String>> gatherData) {
 
+        logger.info("get tables info in gather");
+
         List<TableMetaDataEntity> resultList = new ArrayList<>();
         ConnectorUtil conn = null;
         try {
@@ -103,14 +108,13 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
                 String tableName = gatherDataEntity.getTableName();
                 String db = gatherDataEntity.getDatabaseName();
 
-                conn = new ConnectorUtil(properties.getProperty(Constants.MYSQL_DRIVER_NAME),gatherDataEntity.getJdbcUrl(),gatherDataEntity.getUserName(),gatherDataEntity.getPasswd());
+                conn = new ConnectorUtil(properties.getProperty(Constants.MYSQL_DRIVER_NAME), gatherDataEntity.getJdbcUrl(), gatherDataEntity.getUserName(), gatherDataEntity.getPasswd());
                 List<List<String>> metaData = conn.getMetaData(db, tableName);
                 String tableComment = conn.execQuery(String.format(Constants.TABLE_COMMENT, tableName)).get(0).get(Constants.TABLE_COMMENT_KEY);
                 tableMetaDataEntity.setGatherDataEntity(gatherDataEntity);
                 tableMetaDataEntity.setMetaData(metaData);
                 tableMetaDataEntity.setTableComment(tableComment);
                 resultList.add(tableMetaDataEntity);
-
 
             }
         } finally {
@@ -126,6 +130,8 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
 
     @Override
     public List<HashMap<String, String>> getCreateHiveTableSql(List<TableMetaDataEntity> tableMetaDataEntitys) {
+
+        logger.info("exec create hive sql");
 
         List<HashMap<String, String>> resultList = new ArrayList<>();
         for (TableMetaDataEntity tableMetaDataEntity : tableMetaDataEntitys) {
@@ -149,14 +155,13 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
             for (HashMap<String, String> createHiveTableSql : createHiveTableSqls) {
                 String stgSql = createHiveTableSql.get("stg");
                 String odsSql = createHiveTableSql.get("ods");
-                logger.info("------------------hive table sql in stg------------------");
-                logger.info(stgSql);
-                logger.info("------------------hive table sql in ods------------------");
-                logger.info(odsSql);
                 conn = new ConnectorUtil(properties.getProperty(Constants.HIVE_DRIVER_NAME), properties.getProperty(Constants.HIVE_URL), properties.getProperty(Constants.HIVE_USER), properties.getProperty(Constants.HIVE_PASSWORD));
                 exec = conn.exec(stgSql);
                 exec = conn.exec(odsSql);
             }
+
+            logger.info("create hive table success!");
+
         } finally {
             try {
                 conn.destory();
@@ -180,7 +185,7 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
             dataxJsonList.add(dataXJson.replace("\"", "\\\""));
         }
 
-        logger.info("------------------init datax json success------------------");
+        logger.info("------------------init datax json------------------");
         logger.info(dataxJsonList.toString());
         return dataxJsonList;
     }
@@ -201,6 +206,7 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
             boolean online = gatherDataEntity.getIsOnline();
             String crontab = gatherDataEntity.getCrontab();
             int exec = conn.execUpdateOrInsert(String.format(Constants.INSERT_GATHER_DATA, properties.getProperty(Constants.MYSQL_DB), properties.getProperty(Constants.MYSQL_TABLE_NAME), jdbcUrl, databaseName, tableName, user, passwd, syncType, dolphinProjectName, isCreateHiveTable, online, crontab));
+            logger.info("insert gather's data by id successfully");
             return exec;
         } finally {
             try {
@@ -228,6 +234,7 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
             boolean online = gatherDataEntity.getIsOnline();
             String crontab = gatherDataEntity.getCrontab();
             int exec = conn.execUpdateOrInsert(String.format(Constants.UPDATE_GATHER_DATA, properties.getProperty(Constants.MYSQL_DB), properties.getProperty(Constants.MYSQL_TABLE_NAME), jdbcUrl, databaseName, tableName, user, passwd, syncType, dolphinProjectName, isCreateHiveTable, online, crontab, jobId));
+            logger.info("update gather's data by id successfully, jobId : {}", jobId);
             return exec;
         } finally {
             try {
@@ -245,6 +252,8 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
         try {
             conn = getConn();
             execSucc = conn.execUpdateOrInsert(String.format(Constants.DELETE_GATHER_BY_ID, properties.getProperty(Constants.MYSQL_DB), properties.getProperty(Constants.MYSQL_TABLE_NAME), id));
+
+            logger.info("delete gather's data by id successfully, id : {}", id);
         } finally {
             try {
                 conn.destory();
@@ -267,6 +276,7 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
                 HashMap<String, String> colData = gatherData.get(i);
                 gatherDataEntity = JSON.parseObject(JSON.toJSONString(colData), GatherDataEntity.class);
             }
+            logger.info("find gather's data by id successfully, id: {}", id);
 
         } finally {
             try {
@@ -312,7 +322,8 @@ public class GatherDataInterfaceImpl implements GatherDataInterface {
             conn = getConn();
             count = Integer.valueOf(conn.execQuery(String.format(Constants.SELECT_COUNT_FROM_TABLE, properties.getProperty(Constants.MYSQL_DB), properties.getProperty(Constants.MYSQL_TABLE_NAME)))
                     .get(0).values().toArray()[0].toString());
-            logger.info("find gather's data count:{}",count);
+
+            logger.info("find gather's data count successfully, total count: {}", count);
         } finally {
             try {
                 conn.destory();

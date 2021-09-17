@@ -191,6 +191,8 @@ public class DBToHiveData {
                 externalString, db, tableName,
                 colString.substring(0, colString.lastIndexOf(",")), tableComment, partationInfo, hiveRowFormat, hiveStoreType, location);
 
+        logger.info("create hive table sql: {}",creataTableString);
+
         return creataTableString;
 
     }
@@ -209,8 +211,10 @@ public class DBToHiveData {
                 jsonStringBuilder.append(line + "\n");
             }
         } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         } finally {
             try {

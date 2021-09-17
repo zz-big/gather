@@ -32,6 +32,7 @@ public class RequestDolphinInterfaceImpl implements RequestDolphinInterface {
 
     @Override
     public String doSave(Properties properties, List<HashMap<String, String>> createHiveTableSqls, List<String> dataxJsonList, int id, GatherDataEntity gatherDataEntity) {
+        logger.info("---------------create dolphin job---------------");
         Map<String, Object> params = new HashMap<String, Object>();
         Map<String, Object> paramsOnLine = new HashMap<String, Object>();
 
@@ -82,21 +83,30 @@ public class RequestDolphinInterfaceImpl implements RequestDolphinInterface {
                     break;
                 case Constants.SYNC_TYPE_INCRE:
                     stgToOdsSql = properties.getProperty(Constants.STG_TO_ODS_SQL_OF_INCRE).replace(Constants.ODS_TABLE_NAME, odsTableName).replace(Constants.STG_TABLE_NAME, stgTableName)
-                            .replace(Constants.ODS_COLS, odsCols.replace(stgAddcol,odsAddcol)).replace(Constants.STG_T_COLS, stg_tCols.replace(stgAddcol,odsAddcol)).replace(Constants.STG_COLS, stgCols.substring(0, stgCols.lastIndexOf(",\\n"))+" as "+ odsAddcol +", ").replace(Constants.PARTITION_COL_NAME, partition_col_name);
+                            .replace(Constants.ODS_COLS, odsCols.replace(stgAddcol, odsAddcol)).replace(Constants.STG_T_COLS, stg_tCols.replace(stgAddcol, odsAddcol)).replace(Constants.STG_COLS, stgCols.substring(0, stgCols.lastIndexOf(",\\n")) + " as " + odsAddcol + ", ").replace(Constants.PARTITION_COL_NAME, partition_col_name);
                     description = Constants.SYNC_TYPE_INCRE;
                     break;
                 default:
                     break;
 
             }
-            logger.info("------------------" + stgTableName + " stg to ods sql------------------");
+            logger.info("------------------stg to ods sql, tableName: " + stgTableName + "---------------");
             logger.info(stgToOdsSql);
 
             String processDefinitionJson = properties.getProperty(Constants.PROCESS_DEFINITION_JSON).replace(Constants.STG_TO_ODS_SQL, stgToOdsSql).replace(Constants.STG_TABLE_NAME, stgTableName)
                     .replace(Constants.ODS_TABLE_NAME, odsTableName).replace(Constants.DATAX_JSON, dataxJson).replace(Constants.DATASOURCE_NAME, properties.getProperty(Constants.DOLPHIN_SQL_DATA_SOURCENAME))
                     .replace(Constants.TENANT_ID_NAME, properties.getProperty(Constants.TENANT_ID));
-            processDefinitionJson = Request.encodeURL(processDefinitionJson);
+
             String dolphinProjectName = gatherDataEntity.getDolphinProjectName();
+            logger.info("------------------ dolphinProjectName: " + dolphinProjectName + ",  odsTableName: " + odsTableName + "-------------");
+            logger.info(Constants.PROJECT_NAME + ": " + dolphinProjectName);
+            logger.info(Constants.NAME + ": " + odsTableName);
+            logger.info(Constants.PROCESS_DEFINITION_JSON + ":" + processDefinitionJson);
+            logger.info(Constants.LOCATIONS + ": " + properties.getProperty(Constants.LOCATIONS));
+            logger.info(Constants.CONNECTIONS + ": " + properties.getProperty(Constants.CONNECTIONS));
+            logger.info(Constants.DESCRIPTION + ": " + description);
+
+            processDefinitionJson = Request.encodeURL(processDefinitionJson);
 
             params.put(Constants.PROJECT_NAME, dolphinProjectName);
             params.put(Constants.NAME, odsTableName);
@@ -105,14 +115,6 @@ public class RequestDolphinInterfaceImpl implements RequestDolphinInterface {
             params.put(Constants.CONNECTIONS, properties.getProperty(Constants.CONNECTIONS));
             params.put(Constants.DESCRIPTION, description);
 
-            logger.info("------------------ dolphinProjectName:" + dolphinProjectName + "-----" + odsTableName + "-------------");
-            logger.info(Constants.PROJECT_NAME + ":" + dolphinProjectName);
-            logger.info(Constants.NAME + ":" + odsTableName);
-            logger.info(Constants.PROCESS_DEFINITION_JSON + ":" + processDefinitionJson);
-            logger.info(Constants.LOCATIONS + ":" + properties.getProperty(Constants.LOCATIONS));
-            logger.info(Constants.CONNECTIONS + ":" + properties.getProperty(Constants.CONNECTIONS));
-            logger.info(Constants.DESCRIPTION + ":" + description);
-            logger.info("------------------ dolphinProjectName:" + dolphinProjectName + "-----" + odsTableName + "-------------");
 
             String saveUrl = String.format(Constants.SAVE_URL, properties.getProperty(Constants.URL), dolphinProjectName);
             String jobOnLineUrl = String.format(Constants.JOB_ON_lINE_URL, properties.getProperty(Constants.URL), dolphinProjectName);
@@ -138,6 +140,7 @@ public class RequestDolphinInterfaceImpl implements RequestDolphinInterface {
                     paramsOnLine.put(Constants.RELEASE_STATE, Constants.RELEASE_STATE_ON_LINE);
                     //上线job
                     onLineProcess = Request.post(jobOnLineUrl).params(paramsOnLine).body(token);
+                    logger.info("on line job success, id : {}", jobId);
 
                     //dolphin job上线成功，配置定时任务
                     if (!onLineProcess.contains(Constants.FAILED)) {
@@ -180,16 +183,15 @@ public class RequestDolphinInterfaceImpl implements RequestDolphinInterface {
             params.put(Constants.WORKER_GROUP, properties.getProperty(Constants.WORKER_GROUP));
             params.put(Constants.PROCESS_DEFINITION_ID, jobId);
 
-            logger.info("------------------ dolphinProjectName:" + dolphinProjectName + "------------------");
-            logger.info(Constants.SCHEDULE + ":" + schedule);
-            logger.info(Constants.FAILURE_STRATEGY + ":" + properties.getProperty(Constants.FAILURE_STRATEGY));
+            logger.info("------------------on line scheduler, dolphinProjectName: " + dolphinProjectName + "------------------");
+            logger.info(Constants.SCHEDULE + ": " + schedule);
+            logger.info(Constants.FAILURE_STRATEGY + ": " + properties.getProperty(Constants.FAILURE_STRATEGY));
             logger.info(Constants.PROCESS_INSTANCE_PRIORITY + ":" + properties.getProperty(Constants.PROCESS_INSTANCE_PRIORITY));
-            logger.info(Constants.WARNING_GROUP_ID + ":" + properties.getProperty(Constants.WARNING_GROUP_ID));
-            logger.info(Constants.RECEIVERS + ":" + properties.getProperty(Constants.RECEIVERS));
-            logger.info(Constants.RECEIVERS_CC + ":" + properties.getProperty(Constants.RECEIVERS_CC));
-            logger.info(Constants.WORKER_GROUP + ":" + properties.getProperty(Constants.WORKER_GROUP));
-            logger.info(Constants.PROCESS_DEFINITION_ID + ":" + jobId);
-            logger.info("------------------ dolphinProjectName:" + dolphinProjectName + "------------------");
+            logger.info(Constants.WARNING_GROUP_ID + ": " + properties.getProperty(Constants.WARNING_GROUP_ID));
+            logger.info(Constants.RECEIVERS + ": " + properties.getProperty(Constants.RECEIVERS));
+            logger.info(Constants.RECEIVERS_CC + ": " + properties.getProperty(Constants.RECEIVERS_CC));
+            logger.info(Constants.WORKER_GROUP + ": " + properties.getProperty(Constants.WORKER_GROUP));
+            logger.info(Constants.PROCESS_DEFINITION_ID + ": " + jobId);
 
             String schedulerProcess = null;
             String searchScheduleProcess = null;
@@ -205,12 +207,16 @@ public class RequestDolphinInterfaceImpl implements RequestDolphinInterface {
                 //上线定时任务
                 schedulerOnLineparams.put(Constants.SCHEDULER_ID, scheduleId);
                 schedulerOnLineProcess = Request.post(schedulerOnLineUrl).params(schedulerOnLineparams).body(token);
+                logger.info("------------------ on line scheduler success, job id : {}, schedule id : {} ------------------ ", jobId, scheduleId);
+
                 return schedulerOnLineProcess;
 
             }
         } catch (IOException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         } finally {
             try {
