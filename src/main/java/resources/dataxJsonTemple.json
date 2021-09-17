@@ -1,0 +1,75 @@
+{
+  "core": {
+    "transport": {
+      "channel": {
+        "speed": {
+          "record": 4194304
+        }
+      }
+    }
+  },
+  "job": {
+    "setting": {
+      "speed": {
+        "byte": 20971520
+      }
+    },
+    "errorLimit": {
+      "record": 0,
+      "percentage": 0.02
+    },
+    "content": [
+      {
+        "reader": {
+          "name": "mysqlreader",
+          "parameter": {
+            "username": "$username",
+            "password": "$password",
+            "connection": [
+              {
+                "querySql": [
+                  "select $col from $db.$table $where"
+                ],
+                "jdbcUrl": [
+                  "$jdbcUrl?useUnicode=true&characterEncoding=UTF8&tinyInt1isBit=false"
+                ]
+              }
+            ]
+          }
+        },
+        "writer": {
+          "name": "hdfswriter",
+          "parameter": {
+            "defaultFS": "hdfs://nameservice1",
+            "fileType": "$fileType",
+            "path": "$path",
+            "fileName": "$fileName",
+            "hadoopConfig": {
+              "dfs.client.failover.proxy.provider.nameservice1": "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider",
+              "dfs.ha.namenodes.nameservice1": "namenode245,namenode269",
+              "dfs.namenode.rpc-address.nameservice1.namenode245": "pd-cdh-192-168-0-3-node:8020",
+              "dfs.namenode.rpc-address.nameservice1.namenode269": "pd-cdh-192-168-0-5-node:8020",
+              "dfs.nameservices": "nameservice1"
+            },
+            "column": [
+"$column"
+            ],
+            "writeMode": "nonConflict",
+            "nullFormat": "\\\\N",
+            "fieldDelimiter": "\\u0001",
+            "compress": "$compress"
+          }
+        },
+        "transformer": [
+          {
+            "name": "dx_groovy",
+            "parameter": {
+              "code": "int columnNumber = record.getColumnNumber(); for(int index = 0; index < columnNumber; index++) { Column column = record.getColumn(index); if(column.rawData == null) { continue;}; def str = column.asString(); def newStr=null; newStr=str.replaceAll(\\"[\\\\r\\\\n|\\\\r|\\\\n]\\",\\"\\"); record.setColumn(index, new StringColumn(newStr));}; return record;",
+              "extraPackage": []
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
