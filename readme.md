@@ -8,11 +8,11 @@ mvn clean install
 
 整体项目流程图：
 
-![gather](https://codeup.aliyun.com/60a7c4c62c5969c370c58471/pudu_data_platform/gather/blob/master/img/gather.png)
+![gather](.\img\gather.png)
 
 时序图：
 
-![GatherDataService_onLineGather](https://codeup.aliyun.com/60a7c4c62c5969c370c58471/pudu_data_platform/gather/blob/master/img/GatherDataService_onLineGather.png)
+![GatherDataService_onLineGather](.\img\GatherDataService_onLineGather.png)
 
 
 
@@ -59,21 +59,21 @@ tenantId=-1
 
 ## 本地idea运行项目
 
-![idea_run_1](https://codeup.aliyun.com/60a7c4c62c5969c370c58471/pudu_data_platform/gather/blob/master/img/idea_run_1.png)
+![idea_run_1](.\img\idea_run_1.png)
 
-![idea_run_2](https://codeup.aliyun.com/60a7c4c62c5969c370c58471/pudu_data_platform/gather/blob/master/img/idea_run_2.png)
+![idea_run_2](.\img\idea_run_2.png)
 
-![idea_run_3](https://codeup.aliyun.com/60a7c4c62c5969c370c58471/pudu_data_platform/gather/blob/master/img/idea_run_3.png)
+![idea_run_3](.\img\idea_run_3.png)
 
 点击run启动项目
 
-![idea_run_4](https://codeup.aliyun.com/60a7c4c62c5969c370c58471/pudu_data_platform/gather/blob/master/img/idea_run_4.png)
+![idea_run_4](.\img\idea_run_4.png)
 
 # 使用
 
 ## 新增要采集的表信息：
 
-![idea_run_5](https://codeup.aliyun.com/60a7c4c62c5969c370c58471/pudu_data_platform/gather/blob/master/img/idea_run_5.png)
+![idea_run_5](.\img\idea_run_5.png)
 
 采集信息显示，新增采集信息默认上线dolphin项目是false，点击上线后会创建dolphin任务流，
 
@@ -83,7 +83,7 @@ tenantId=-1
 
 点击上线，会提示上线成功或失败，上线成功后可点击dolphin主页按钮跳转dolphin主页查看任务信息。
 
-![idea_run_6](https://codeup.aliyun.com/60a7c4c62c5969c370c58471/pudu_data_platform/gather/blob/master/img/idea_run_6.png)
+![idea_run_6](.\img\idea_run_6.png)
 
 
 
