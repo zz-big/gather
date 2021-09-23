@@ -158,6 +158,51 @@ public class RequestDolphinInterfaceImpl implements RequestDolphinInterface {
     }
 
     @Override
+    public String doRemove(Properties properties, int id, GatherDataEntity gatherDataEntity) {
+        String db = gatherDataEntity.getDatabaseName();
+        String tableName = gatherDataEntity.getTableName();
+        String dolphinProjectName = gatherDataEntity.getDolphinProjectName();
+        String odsTableName = db + "_" + tableName + "_" + properties.getProperty(Constants.HIVE_ODS_TABLE_LAST_FIX);
+        String searchUrl = String.format(Constants.SEARCH_URL, properties.getProperty(Constants.URL), dolphinProjectName, odsTableName);
+        String jobOnLineUrl = String.format(Constants.JOB_ON_lINE_URL, properties.getProperty(Constants.URL), dolphinProjectName);
+
+        String searchProcess = null;
+        String jobId = null;
+        String token = properties.getProperty(Constants.TOKEN);
+        String offLineProcess = null;
+        System.out.println(searchUrl);
+        try {
+            searchProcess = Request.get(searchUrl).body(token);
+            logger.info("searchProcess: {}", searchProcess);
+            // 获取工作流id
+            jobId = JSON.parseObject(JSON.parseObject(searchProcess).getJSONObject("data").getJSONArray("totalList").getString(0)).getString("id");
+
+            // 下线job
+            Map<String, Object> paramsOffLine = new HashMap<String, Object>();
+            paramsOffLine.put(Constants.PROCESS_ID, jobId);
+            paramsOffLine.put(Constants.RELEASE_STATE, Constants.RELEASE_STATE_OFF_LINE);
+            offLineProcess = Request.post(jobOnLineUrl).params(paramsOffLine).body(token);
+            logger.info("off line job success, id : {}", jobId);
+            int offLineProcessReturnCode = JSON.parseObject(offLineProcess).getIntValue("code");
+            if(offLineProcessReturnCode != 0) {
+                return Constants.FAILED;
+            }
+
+            // 删除job
+            String jobDeleteUrl = String.format(Constants.JOB_DELETE_URL, properties.getProperty(Constants.URL), dolphinProjectName, jobId);
+            String jobDeleteProcess = Request.get(jobDeleteUrl).body(token);
+            int jobDeleteReturnCode = JSON.parseObject(jobDeleteProcess).getIntValue("code");
+            logger.info("jobDeleteProcess:{}", jobDeleteProcess);
+            if(jobDeleteReturnCode != 0) {
+                return Constants.FAILED;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Constants.SUCCESS;
+    }
+
+    @Override
     public String doScheduler(Properties properties, int id, String jobId, String dolphinProjectName, String token) {
         Map<String, Object> params = new HashMap<String, Object>();
         Map<String, Object> schedulerOnLineparams = new HashMap<String, Object>();

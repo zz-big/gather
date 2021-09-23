@@ -43,6 +43,7 @@ public interface Constants {
     String UPDATE_GATHER_DATA = "update %s.%s set jdbc_url = '%s',database_name='%s',table_name='%s',user_name='%s',passwd='%s',sync_type='%s',dolphin_project_name='%s',create_hive_table=%s,is_online=%s,crontab='%s' " +
             "where job_id=%s";
     String UPDATE_GATHER_CREATE_JOB_AND_ON_LINE = "update %s.%s set is_online=%s  where job_id=%s";
+    String UPDATE_GATHER_DELETE_JOB_AND_OFF_LINE = "update %s.%s set is_online=%s  where job_id=%s";
     String TABLE_COMMENT_KEY = "TABLE_COMMENT";
 
 
@@ -93,7 +94,7 @@ public interface Constants {
     String PROCESS_ID = "processId";
     String RELEASE_STATE = "releaseState";
     String RELEASE_STATE_ON_LINE = "1";
-
+    String RELEASE_STATE_OFF_LINE = "0";
 
     String STG_TO_ODS_SQL_OF_INCRE = "stgToOdsSqlOfIncre";
     String STG_TO_ODS_SQL_OF_SNAPSHOT = "stgToOdsSqlOfSnapshot";
@@ -117,6 +118,7 @@ public interface Constants {
     String RECEIVERS_CC = "receiversCc";
     String WORKER_GROUP = "workerGroup";
     String PROCESS_DEFINITION_ID = "processDefinitionId";
+    String PROCESS_DELETE_ID = "processDefinitionId";
 
     String SCHEDULER_ID = "id";
 
@@ -129,6 +131,7 @@ public interface Constants {
     String SCHEDULER_ON_LINE_URL = "%s/dolphinscheduler/projects/%s/schedule/online";
     String JOB_ON_lINE_URL = "%s/dolphinscheduler/projects/%s/process/release";
     String DOLPHIN_URL = "%s/dolphinscheduler/ui/#/projects/list";
+    String JOB_DELETE_URL = "%s/dolphinscheduler/projects/%s/process/delete?processDefinitionId=%s";
 
     String PROCESS_DEFINITION_NAME = "processDefinitionName";
     String SCHEDULE_CRONTAB = "scheduleCrontab";

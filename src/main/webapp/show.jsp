@@ -33,6 +33,21 @@
             }
         }
 
+        function offLineGather(id) {
+            if (confirm("确认下线吗？")) {
+                $.post("offLineGather", {"int": id}, function (data) {
+                    if (data == 1) {
+                        alert("下线成功");
+                        location.href = "findGatherByPage?pageIndex=1";
+                    }
+                    else {
+                        alert("下线失败");
+                    }
+
+                });
+            }
+        }
+
         function deleteGather(id) {
             var flag = confirm("确认删除此条信息吗？")
             if (flag)
@@ -174,6 +189,11 @@
                     <c:if test="${c.isOnline == false}">
                         <button onclick="onLineGather(${c.jobId})" class="btn btn-info"><span
                                 class="glyphicon glyphicon-info-sign"> </span>上线
+                        </button>
+                    </c:if>
+                    <c:if test="${c.isOnline == true}">
+                        <button onclick="offLineGather(${c.jobId})" class="btn btn-info"><span
+                                class="glyphicon glyphicon-info-sign"> </span>下线
                         </button>
                     </c:if>
 

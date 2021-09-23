@@ -19,4 +19,6 @@ public interface RequestDolphinInterface {
 
     String getDolphinUrl(Properties properties) throws Exception;
 
+    String doRemove(Properties properties, int id, GatherDataEntity gatherDataEntity) throws Exception;
+
 }

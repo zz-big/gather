@@ -114,6 +114,27 @@ public class GatherDataService {
         return n;
     }
 
+    public int offLineGather(Integer id) {
+        int n = 0;
+        try {
+            List<HashMap<String, String>> gatherData = gatherDataInterface.getGatherDataById(id);
+            List<TableMetaDataEntity> tableInGather = gatherDataInterface.getTablesInGather(gatherData);
+            GatherDataEntity gatherDataEntity = tableInGather.get(0).getGatherDataEntity();
+            String doRemove = requestDolphinInterface.doRemove(properties, id, gatherDataEntity);
+            if(doRemove.equals(Constants.SUCCESS)) {
+                //更新数据库
+                ConnectorUtil conn = gatherDataInterface.getConn();
+                String updateCreateJobAndOnLine = String.format(Constants.UPDATE_GATHER_DELETE_JOB_AND_OFF_LINE, properties.getProperty(Constants.MYSQL_DB), properties.getProperty(Constants.MYSQL_TABLE_NAME), Constants.FALSE, id);
+                int result = conn.execUpdateOrInsert(updateCreateJobAndOnLine);
+                n = n + result;
+            }
+        } catch (Exception e) {
+            logger.error("off line job by {} failed! {}", id, e.getMessage());
+            e.printStackTrace();
+        }
+        return n;
+    }
+
 
     public int insertGatherData(GatherDataEntity gatherDataEntity) {
         int n = 0;

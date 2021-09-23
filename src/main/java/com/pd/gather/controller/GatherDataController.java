@@ -141,6 +141,13 @@ public class GatherDataController {
         return gatherDataService.onLineGather(id);
     }
 
+    @RequestMapping("offLineGather")
+    public @ResponseBody
+    int offLineGather(@RequestParam(value = "int") Integer id) {
+        logger.info("offline job by id: {}", id);
+        return gatherDataService.offLineGather(id);
+    }
+
     @RequestMapping("onLineBatch")
     public @ResponseBody
     int onLineBatch(@RequestParam(value = "list[]") String[] onLineList) {
