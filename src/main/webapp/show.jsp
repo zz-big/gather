@@ -199,20 +199,22 @@
 
                 </td>
             </tr>
-
         </c:forEach>
         <tr>
-            <c:if test="${pageIndex>1 }">
-                <td colspan="7">
-                    <button onclick="goPage(1)" class="btn btn-default">首页</button>
-                    <button onclick="goPage(${pageIndex-1})" class="btn btn-default">上一页</button>
-                </td>
+            <td>
+                <c:if test="${pageIndex>1 }">
+            <td>
+                <button onclick="goPage(1)" class="btn btn-default">首页</button>
+                <button onclick="goPage(${pageIndex-1})" class="btn btn-default">上一页</button>
+            </td>
             </c:if>
             <c:if test="${pageIndex<totalPage }">
-                <button onclick="goPage(${pageIndex+1})" class="btn btn-default">下一页</button>
-                <button onclick="goPage(${totalPage})" class="btn btn-default">尾页</button>
+                <td>
+                    <button onclick="goPage(${pageIndex+1})" class="btn btn-default">下一页</button>
+                    <button onclick="goPage(${totalPage})" class="btn btn-default">尾页</button>
+                </td>
             </c:if>
-
+            </td>
         </tr>
     </table>
 
